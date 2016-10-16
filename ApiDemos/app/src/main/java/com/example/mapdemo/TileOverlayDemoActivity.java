@@ -16,9 +16,12 @@
 
 package com.example.mapdemo;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.TileOverlay;
 import com.google.android.gms.maps.model.TileOverlayOptions;
 import com.google.android.gms.maps.model.TileProvider;
@@ -45,7 +48,20 @@ public class TileOverlayDemoActivity extends AppCompatActivity
 
     /** This returns moon tiles. */
     private static final String MOON_MAP_URL_FORMAT =
-            "http://mw1.google.com/mw-planetary/lunar/lunarmaps_v1/clem_bw/%d/%d/%d.jpg";
+            "http://mw1.google.com/mw-planetary/lunar/lunarmaps_v1/clem_bw/%d/%d/%d.jpg";//zoom x y
+
+    /*This returns tiles of Swedish alpine*/
+    private static final String TILE_ALPINE_SWEDEN =
+            "http://unitedeyes-tiles-se-alpine.s3-website.eu-central-1.amazonaws.com/%d/%d/%d.png";//zoom x y
+
+    private static final String TILE_GOOGLE_SERVER =
+            "http://mt1.google.com/vt/lyrs=y&x=%d&y=%d&z=%d";//x y zoom
+
+    private static final String TILE_SERVER_OPENSTREETMAP =
+            "http://tile.openstreetmap.org/%d/%d/%d.png";//zoom x y
+
+    private static final String TILE_THUNDERFOREST =
+            "https://tile.thunderforest.com/cycle/%d/%d/%d.png?apikey=8961b968eee345bea608772716c23ed2";//zoom x y
 
     private TileOverlay mMoonTiles;
     private SeekBar mTransparencyBar;
@@ -73,7 +89,8 @@ public class TileOverlayDemoActivity extends AppCompatActivity
             public synchronized URL getTileUrl(int x, int y, int zoom) {
                 // The moon tile coordinate system is reversed.  This is not normal.
                 int reversedY = (1 << zoom) - y - 1;
-                String s = String.format(Locale.US, MOON_MAP_URL_FORMAT, zoom, x, reversedY);
+                //String s = String.format(Locale.US, MOON_MAP_URL_FORMAT, zoom, x, reversedY);
+                String s = String.format(Locale.US, TILE_THUNDERFOREST, zoom, x, y);
                 URL url = null;
                 try {
                     url = new URL(s);
@@ -86,6 +103,10 @@ public class TileOverlayDemoActivity extends AppCompatActivity
 
         mMoonTiles = map.addTileOverlay(new TileOverlayOptions().tileProvider(tileProvider));
         mTransparencyBar.setOnSeekBarChangeListener(this);
+
+        LatLng place = new LatLng(65.253232, 15.488009);
+        map.addMarker(new MarkerOptions().position(place).title("This is in Kittelfjäll"));
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(place, 4.0f));
     }
 
     public void setFadeIn(View v) {
